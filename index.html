@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arfe Bros 3D</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="overlay">
+    <div class="title">Arfe Bros 3D</div>
+    <div class="panel">
+      <div class="panel-row">
+        <div class="track-label">Pista</div>
+        <select id="track-select">
+          <option value="tropical">Pista Tropical</option>
+          <option value="desert">Pista Desierto</option>
+          <option value="neon">Pista Neón</option>
+        </select>
+      </div>
+      <div class="hud">
+        <div>Velocidad: <span id="speed">0</span> km/h</div>
+        <div>Vueltas: <span id="lap">0</span> / 3</div>
+        <div>Track: <span id="track-name">Pista Tropical</span></div>
+        <div id="message">Usa W/A/S/D para conducir.</div>
+      </div>
+      <div class="instructions">
+        Controles: <strong>W</strong>=Acelerar, <strong>S</strong>=Frenar, <strong>A/D</strong>=Girar
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
