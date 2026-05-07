@@ -9,19 +9,20 @@ camera.up.set(0, 0, -1);
 camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio * 1.8, 4));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
+renderer.toneMappingExposure = 1.4;
 document.body.appendChild(renderer.domElement);
 
-const ambient = new THREE.HemisphereLight(0x111133, 0x000000, 0.4);
+const ambient = new THREE.HemisphereLight(0x222244, 0x101020, 0.7);
 scene.add(ambient);
 
-const skylight = new THREE.DirectionalLight(0xe8f5ff, 0.45);
-skylight.position.set(90, 120, 90);
+const skylight = new THREE.DirectionalLight(0xe8f5ff, 0.55);
+skylight.position.set(90, 140, 90);
 skylight.castShadow = true;
 skylight.shadow.mapSize.set(4096, 4096);
 scene.add(skylight);
@@ -117,6 +118,7 @@ const state = {
   lastFinish: false,
   maxLaps: 3,
   playerColor: 0x8B4513,
+  viewMode: 'top',
 };
 
 const speedEl = document.getElementById('speed');
@@ -124,6 +126,7 @@ const lapEl = document.getElementById('lap');
 const messageEl = document.getElementById('message');
 const trackNameEl = document.getElementById('track-name');
 const trackSelect = document.getElementById('track-select');
+const viewSelect = document.getElementById('view-select');
 
 const playerSelect = document.getElementById('player-select');
 const startButton = document.getElementById('start-button');
@@ -131,6 +134,10 @@ const menuOverlay = document.getElementById('menu-overlay');
 const gameOverlay = document.getElementById('game-overlay');
 
 let gameStarted = false;
+
+viewSelect.addEventListener('change', () => {
+  state.viewMode = viewSelect.value;
+});
 
 startButton.addEventListener('click', () => {
   const selectedTrack = trackSelect.value;
@@ -164,6 +171,7 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio * 1.8, 4));
 });
 
 function createGroundTexture() {
@@ -494,6 +502,7 @@ function setTrack(trackId) {
   state.bestMessage = `Entra en ${next.name} y domina el Gran Premio.`;
   trackNameEl.textContent = next.name;
   trackSelect.value = next.id;
+  viewSelect.value = state.viewMode;
 }
 
 function buildKart(color) {
@@ -590,8 +599,18 @@ function updatePhysics(delta) {
 }
 
 function updateCamera() {
-  camera.position.set(state.position.x, 130, state.position.z);
-  camera.lookAt(state.position.x, 0, state.position.z);
+  if (state.viewMode === 'chase') {
+    const chaseOffset = new THREE.Vector3(Math.sin(state.rotation), 0.35, Math.cos(state.rotation)).multiplyScalar(-18);
+    camera.position.copy(state.position).add(chaseOffset);
+    camera.position.y = 14;
+    camera.lookAt(state.position.x, 1.8, state.position.z);
+  } else if (state.viewMode === 'aerial') {
+    camera.position.copy(state.position).add(new THREE.Vector3(-32, 42, 32));
+    camera.lookAt(state.position.x, 2.2, state.position.z);
+  } else {
+    camera.position.set(state.position.x, 140, state.position.z);
+    camera.lookAt(state.position.x, 0, state.position.z);
+  }
 }
 
 function updateUI() {
