@@ -110,8 +110,7 @@ let currentTrack = null;
 let trackGroup = new THREE.Group();
 scene.add(trackGroup);
 
-const kart = buildKart();
-scene.add(kart.group);
+let kart;
 
 const state = {
   speed: 0,
@@ -123,6 +122,7 @@ const state = {
   bestMessage: 'Bienvenido a Arfe Bros: usa W/A/S/D para conducir.',
   lastFinish: false,
   maxLaps: 3,
+  playerColor: 0x8B4513,
 };
 
 const speedEl = document.getElementById('speed');
@@ -131,8 +131,27 @@ const messageEl = document.getElementById('message');
 const trackNameEl = document.getElementById('track-name');
 const trackSelect = document.getElementById('track-select');
 
+const playerSelect = document.getElementById('player-select');
+const startButton = document.getElementById('start-button');
+const menuOverlay = document.getElementById('menu-overlay');
+const gameOverlay = document.getElementById('game-overlay');
+
+let gameStarted = false;
+
+startButton.addEventListener('click', () => {
+  const selectedTrack = trackSelect.value;
+  const selectedPlayer = playerSelect.value;
+  const colorMap = { red: 0x8B4513, yellow: 0xDAA520, purple: 0x800080 };
+  state.playerColor = colorMap[selectedPlayer];
+  setTrack(selectedTrack);
+  kart = buildKart(state.playerColor);
+  scene.add(kart.group);
+  menuOverlay.style.display = 'none';
+  gameOverlay.style.display = 'block';
+  gameStarted = true;
+});
+
 trackSelect.addEventListener('change', () => setTrack(trackSelect.value));
-setTrack('tropical');
 
 window.addEventListener('keydown', (event) => {
   if (event.key === 'w' || event.key === 'W') state.keys.forward = true;
@@ -280,31 +299,34 @@ function setTrack(trackId) {
   trackSelect.value = next.id;
 }
 
-function buildKart() {
+function buildKart(color) {
   const group = new THREE.Group();
 
-  const body = new THREE.Mesh(
-    new THREE.BoxGeometry(2.4, 0.9, 4.2),
-    new THREE.MeshStandardMaterial({ color: 0xff3f3f, roughness: 0.25, metalness: 0.2 })
-  );
-  body.position.y = 0.55;
-  body.castShadow = true;
-  group.add(body);
+  // Patata: esfera alargada
+  const potatoGeo = new THREE.SphereGeometry(1.2, 16, 12);
+  potatoGeo.scale(1, 0.8, 1.5);
+  const potato = new THREE.Mesh(potatoGeo, new THREE.MeshStandardMaterial({ color: color, roughness: 0.8 }));
+  potato.position.y = 0.6;
+  potato.castShadow = true;
+  group.add(potato);
 
-  const cabin = new THREE.Mesh(
-    new THREE.BoxGeometry(1.4, 0.75, 1.4),
-    new THREE.MeshStandardMaterial({ color: 0x2f8cff, roughness: 0.3, metalness: 0.1 })
-  );
-  cabin.position.set(0, 1.05, -0.3);
-  cabin.castShadow = true;
-  group.add(cabin);
+  // Ojos: dos esferas pequeñas
+  const eyeGeo = new THREE.SphereGeometry(0.1, 8, 8);
+  const eyeMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
+  const eye1 = new THREE.Mesh(eyeGeo, eyeMat);
+  eye1.position.set(0.3, 0.8, 0.8);
+  group.add(eye1);
+  const eye2 = new THREE.Mesh(eyeGeo, eyeMat);
+  eye2.position.set(-0.3, 0.8, 0.8);
+  group.add(eye2);
 
-  const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.7 });
-  const wheelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.6, 16);
-  for (const [x, z] of [[1.05, 1.3], [-1.05, 1.3], [1.05, -1.3], [-1.05, -1.3]]) {
-    const wheel = new THREE.Mesh(wheelGeo, wheelMaterial);
+  // Ruedas: cilindros pequeños
+  const wheelGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.4, 8);
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.9 });
+  for (const [x, z] of [[0.6, 0.8], [-0.6, 0.8], [0.6, -0.8], [-0.6, -0.8]]) {
+    const wheel = new THREE.Mesh(wheelGeo, wheelMat);
     wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(x, 0.35, z);
+    wheel.position.set(x, 0.2, z);
     wheel.castShadow = true;
     group.add(wheel);
   }
@@ -367,6 +389,9 @@ function updateUI() {
 
 let lastTime = performance.now();
 function animate(time) {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+  if (!gameStarted) return;
   const delta = Math.min(0.033, (time - lastTime) / 1000);
   lastTime = time;
 
@@ -375,8 +400,5 @@ function animate(time) {
   kart.group.rotation.y = state.rotation;
   updateCamera();
   updateUI();
-
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);
