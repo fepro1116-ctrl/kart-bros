@@ -37,7 +37,7 @@ const ground = new THREE.Mesh(
     color: 0x2a6b3d,
     roughness: 0.95,
     metalness: 0.02,
-  })
+  }),
 );
 ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
