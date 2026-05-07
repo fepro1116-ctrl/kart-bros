@@ -1,32 +1,32 @@
-# Cyberpunk Racing
+# Circuito F1 Top-Down
 
-Un juego de carreras 3D futurista en un mundo cyberpunk nocturno con pistas neón, hypercars y lluvia.
+Un circuito de carreras profesional inspirado en los mejores Grandes Premios: Monaco, Suzuka, Silverstone, Singapore y Spa.
 
 ## Cómo ejecutar
 
 1. Abre `index.html` en un navegador moderno.
-2. Selecciona pista y jugador, luego presiona "¡Empezar Carrera!".
+2. Selecciona piloto y presiona "¡Empezar Gran Premio!".
 3. Usa las teclas `W`, `A`, `S`, `D` para conducir.
 
 ## Características
 
-- Pistas cyberpunk con neones y billboards holográficos.
-- Hypercars con diseño aerodinámico, alas masivas y acentos neón.
-- Efectos de lluvia y iluminación realista.
-- Gráficos ultra detallados estilo AAA.
+- Circuito F1 altamente detallado con diseño top-down.
+- Recta principal con parrilla de salida y zona DRS.
+- Pit lane estilo FIA con boxes y camiones de equipo.
+- S-curvas, chicane, hairpin y sector técnico.
+- Puente, túnel y zonas de escape con barreras y TecPro.
+- Grandes gradas, paddock VIP, medios, billboards y helipuerto.
+- Iluminación nocturna con reflectores y ambiente de Gran Premio.
 
 ## Pistas disponibles
 
-- `Pista Cyberpunk`
-- `Pista Neón`
+- `Circuito F1 Top-Down`
 
-## Jugadores
+## Pilotos
 
-- Patata Roja
-- Patata Amarilla
-- Patata Morada
-
-¡Disfruta la carrera en Cyberpunk Racing!
+- Equipo Rojo
+- Equipo Amarillo
+- Equipo Morado
 
 ## Controles
 
@@ -35,4 +35,4 @@ Un juego de carreras 3D futurista en un mundo cyberpunk nocturno con pistas neó
 - `A`: girar a la izquierda
 - `D`: girar a la derecha
 
-¡Disfruta la carrera con Arfe Bros!
+¡Disfruta el Gran Premio!

@@ -3,38 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cyberpunk Racing</title>
+  <title>Circuito F1 Top-Down</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="menu-overlay">
-    <div class="title">Cyberpunk Racing</div>
+    <div class="title">Circuito F1</div>
     <div class="panel">
       <div class="panel-row">
-        <div class="track-label">Pista</div>
+        <div class="track-label">Circuito</div>
         <select id="track-select">
-          <option value="cyberpunk">Pista Cyberpunk</option>
-          <option value="neon">Pista Neón</option>
+          <option value="f1">Circuito F1 Top-Down</option>
         </select>
       </div>
       <div class="panel-row">
-        <div class="player-label">Jugador</div>
+        <div class="player-label">Piloto</div>
         <select id="player-select">
-          <option value="red">Patata Roja</option>
-          <option value="yellow">Patata Amarilla</option>
-          <option value="purple">Patata Morada</option>
+          <option value="red">Equipo Rojo</option>
+          <option value="yellow">Equipo Amarillo</option>
+          <option value="purple">Equipo Morado</option>
         </select>
       </div>
-      <button id="start-button">¡Empezar Carrera!</button>
+      <button id="start-button">¡Empezar Gran Premio!</button>
     </div>
   </div>
   <div id="game-overlay" style="display: none;">
-    <div class="title">Cyberpunk Racing</div>
+    <div class="title">Circuito F1</div>
     <div class="panel">
       <div class="hud">
         <div>Velocidad: <span id="speed">0</span> km/h</div>
         <div>Vueltas: <span id="lap">0</span> / 3</div>
-        <div>Track: <span id="track-name">Pista Tropical</span></div>
+        <div>Track: <span id="track-name">Circuito F1 Top-Down</span></div>
         <div id="message">Usa W/A/S/D para conducir.</div>
       </div>
       <div class="instructions">
