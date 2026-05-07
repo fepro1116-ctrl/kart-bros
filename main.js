@@ -1,42 +1,42 @@
 const scene = new THREE.Scene();
-const skyColor = 0x7fc7ff;
+const skyColor = 0x000011;
 scene.background = new THREE.Color(skyColor);
-scene.fog = new THREE.Fog(skyColor, 90, 250);
+scene.fog = new THREE.Fog(0x001122, 50, 300);
 
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500);
 const renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // for 4K-ish
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
 document.body.appendChild(renderer.domElement);
 
-const ambient = new THREE.HemisphereLight(0xdfefff, 0x2f4565, 0.85);
+const ambient = new THREE.HemisphereLight(0x001122, 0x000033, 0.3);
 scene.add(ambient);
 
-const sun = new THREE.DirectionalLight(0xffffff, 1.2);
-sun.position.set(18, 34, 12);
-sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.near = 1;
-sun.shadow.camera.far = 120;
-sun.shadow.camera.left = -100;
-sun.shadow.camera.right = 100;
-sun.shadow.camera.top = 100;
-sun.shadow.camera.bottom = -100;
-scene.add(sun);
+const neonLight1 = new THREE.DirectionalLight(0x00ffff, 0.8);
+neonLight1.position.set(10, 20, 10);
+neonLight1.castShadow = true;
+neonLight1.shadow.mapSize.set(4096, 4096);
+scene.add(neonLight1);
 
-const fill = new THREE.DirectionalLight(0x99c6ff, 0.25);
-fill.position.set(-40, 30, -20);
-scene.add(fill);
+const neonLight2 = new THREE.DirectionalLight(0xff00ff, 0.5);
+neonLight2.position.set(-10, 15, -10);
+scene.add(neonLight2);
+
+const pointLight1 = new THREE.PointLight(0x00aaff, 2, 100);
+pointLight1.position.set(0, 10, 0);
+scene.add(pointLight1);
 
 const ground = new THREE.Mesh(
   new THREE.PlaneGeometry(420, 420, 6, 6),
   new THREE.MeshStandardMaterial({
     map: createGroundTexture(),
-    color: 0x2a6b3d,
-    roughness: 0.95,
-    metalness: 0.02,
+    color: 0x111111,
+    roughness: 0.9,
+    metalness: 0.1,
   }),
 );
 ground.rotation.x = -Math.PI / 2;
@@ -45,39 +45,17 @@ scene.add(ground);
 
 const trackConfigs = [
   {
-    id: 'tropical',
-    name: 'Pista Tropical',
-    trackColor: 0x141b35,
-    borderColor: 0xffd87a,
+    id: 'cyberpunk',
+    name: 'Pista Cyberpunk',
+    trackColor: 0x000000,
+    borderColor: 0x00ffff,
     centerColor: 0xffffff,
-    groundColor: 0x4b8f36,
+    groundColor: 0x111111,
     start: new THREE.Vector3(0, 0.4, 75),
     rotation: Math.PI,
     outerFn: (t) => new THREE.Vector2(Math.sin(t) * 52, Math.cos(t) * 82),
     innerFn: (t) => new THREE.Vector2(Math.sin(t) * 38, Math.cos(t) * 58),
     centerFn: (t) => new THREE.Vector2(Math.sin(t) * 45, Math.cos(t) * 70),
-  },
-  {
-    id: 'desert',
-    name: 'Pista Desierto',
-    trackColor: 0x3d2617,
-    borderColor: 0xf7b83c,
-    centerColor: 0xfff2bb,
-    groundColor: 0xd8b174,
-    start: new THREE.Vector3(-2, 0.4, 70),
-    rotation: Math.PI,
-    outerFn: (t) => {
-      const radius = 55 + Math.sin(3 * t) * 10;
-      return new THREE.Vector2(Math.sin(t) * radius, Math.cos(t) * 38);
-    },
-    innerFn: (t) => {
-      const radius = 38 + Math.sin(3 * t) * 7;
-      return new THREE.Vector2(Math.sin(t) * radius, Math.cos(t) * 22);
-    },
-    centerFn: (t) => {
-      const radius = 48 + Math.sin(3 * t) * 8;
-      return new THREE.Vector2(Math.sin(t) * radius, Math.cos(t) * 30);
-    },
   },
   {
     id: 'neon',
@@ -119,7 +97,7 @@ const state = {
   rotation: 0,
   keys: { forward: false, backward: false, left: false, right: false },
   laps: 0,
-  bestMessage: 'Bienvenido a Arfe Bros: usa W/A/S/D para conducir.',
+  bestMessage: 'Bienvenido a Cyberpunk Racing: acelera en la noche neón.',
   lastFinish: false,
   maxLaps: 3,
   playerColor: 0x8B4513,
@@ -178,10 +156,10 @@ function createGroundTexture() {
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext('2d');
 
-  ctx.fillStyle = '#3c6b3f';
+  ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, size, size);
 
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.strokeStyle = 'rgba(0,255,255,0.3)';
   ctx.lineWidth = 2;
   for (let i = 0; i < size; i += 32) {
     ctx.beginPath();
@@ -253,11 +231,22 @@ function buildTrack(config) {
   centerLine.computeLineDistances();
   centerLine.rotation.x = -Math.PI / 2;
 
+  // Billboards
+  const billboardMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.3 });
+  const billboard1 = new THREE.Mesh(new THREE.PlaneGeometry(4, 2), billboardMat);
+  billboard1.position.set(20, 3, 20);
+  billboard1.rotation.y = Math.PI / 4;
+  const billboard2 = new THREE.Mesh(new THREE.PlaneGeometry(4, 2), billboardMat);
+  billboard2.position.set(-20, 3, -20);
+  billboard2.rotation.y = -Math.PI / 4;
+
   return {
     mesh: trackMesh,
     edge,
     centerLine,
     finishLine: buildFinishLine(config.start),
+    billboard1,
+    billboard2,
     outerPoints,
     innerPoints,
     config,
@@ -289,12 +278,12 @@ function setTrack(trackId) {
     trackGroup.clear();
   }
   currentTrack = buildTrack(next);
-  trackGroup.add(currentTrack.mesh, currentTrack.edge, currentTrack.centerLine, currentTrack.finishLine);
+  trackGroup.add(currentTrack.mesh, currentTrack.edge, currentTrack.centerLine, currentTrack.finishLine, currentTrack.billboard1, currentTrack.billboard2);
   state.position.copy(next.start);
   state.rotation = next.rotation;
   state.laps = 0;
   state.lastFinish = false;
-  state.bestMessage = `Prefiere la ${next.name} y acelera.`;
+  state.bestMessage = `Entra en ${next.name} y acelera bajo las luces neón.`;
   trackNameEl.textContent = next.name;
   trackSelect.value = next.id;
 }
@@ -302,34 +291,51 @@ function setTrack(trackId) {
 function buildKart(color) {
   const group = new THREE.Group();
 
-  // Patata: esfera alargada
-  const potatoGeo = new THREE.SphereGeometry(1.2, 16, 12);
-  potatoGeo.scale(1, 0.8, 1.5);
-  const potato = new THREE.Mesh(potatoGeo, new THREE.MeshStandardMaterial({ color: color, roughness: 0.8 }));
-  potato.position.y = 0.6;
-  potato.castShadow = true;
-  group.add(potato);
+  // Body: low, wide, aerodynamic
+  const bodyGeo = new THREE.BoxGeometry(3, 0.8, 5);
+  bodyGeo.scale(1, 0.5, 1);
+  const body = new THREE.Mesh(bodyGeo, new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.1, metalness: 0.9 }));
+  body.position.y = 0.4;
+  body.castShadow = true;
+  group.add(body);
 
-  // Ojos: dos esferas pequeñas
-  const eyeGeo = new THREE.SphereGeometry(0.1, 8, 8);
-  const eyeMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
-  const eye1 = new THREE.Mesh(eyeGeo, eyeMat);
-  eye1.position.set(0.3, 0.8, 0.8);
-  group.add(eye1);
-  const eye2 = new THREE.Mesh(eyeGeo, eyeMat);
-  eye2.position.set(-0.3, 0.8, 0.8);
-  group.add(eye2);
+  // Carbon fiber accents
+  const accentGeo = new THREE.BoxGeometry(2.8, 0.1, 4.8);
+  const accent = new THREE.Mesh(accentGeo, new THREE.MeshStandardMaterial({ color: color, roughness: 0.2, metalness: 0.8, emissive: color, emissiveIntensity: 0.1 }));
+  accent.position.y = 0.5;
+  group.add(accent);
 
-  // Ruedas: cilindros pequeños
-  const wheelGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.4, 8);
-  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.9 });
-  for (const [x, z] of [[0.6, 0.8], [-0.6, 0.8], [0.6, -0.8], [-0.6, -0.8]]) {
+  // Massive rear wing
+  const wingGeo = new THREE.BoxGeometry(3.5, 0.1, 0.5);
+  const wing = new THREE.Mesh(wingGeo, new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.3, metalness: 0.7 }));
+  wing.position.set(0, 1.2, -2);
+  group.add(wing);
+
+  // Front wing
+  const frontWing = new THREE.Mesh(wingGeo, new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.3, metalness: 0.7 }));
+  frontWing.position.set(0, 0.3, 2);
+  group.add(frontWing);
+
+  // Wheels: racing slicks
+  const wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.8, 16);
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
+  for (const [x, z] of [[1.2, 1.5], [-1.2, 1.5], [1.2, -1.5], [-1.2, -1.5]]) {
     const wheel = new THREE.Mesh(wheelGeo, wheelMat);
     wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(x, 0.2, z);
+    wheel.position.set(x, 0.4, z);
     wheel.castShadow = true;
     group.add(wheel);
   }
+
+  // Neon accents
+  const neonGeo = new THREE.BoxGeometry(0.1, 0.1, 4);
+  const neonMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.5 });
+  const neon1 = new THREE.Mesh(neonGeo, neonMat);
+  neon1.position.set(1.5, 0.6, 0);
+  group.add(neon1);
+  const neon2 = new THREE.Mesh(neonGeo, neonMat);
+  neon2.position.set(-1.5, 0.6, 0);
+  group.add(neon2);
 
   return { group };
 }
@@ -352,9 +358,9 @@ function updatePhysics(delta) {
   if (!isOnTrack(state.position.x, state.position.z)) {
     state.speed *= 0.92;
     state.position.addScaledVector(forward, -state.speed * delta * 5);
-    state.bestMessage = '¡Cuidado! Vuelve al circuito antes de perder velocidad.';
+    state.bestMessage = '¡Cuidado! Vuelve a la pista neón antes de perder velocidad.';
   } else {
-    state.bestMessage = 'Acelera y controla la curva. ¡Tú puedes!';
+    state.bestMessage = 'Acelera y controla la curva en la noche cyberpunk. ¡Tú puedes!';
   }
 
   const finishZ = currentTrack.config.start.z;
@@ -362,10 +368,10 @@ function updatePhysics(delta) {
   if (crossing && !state.lastFinish) {
     state.laps += 1;
     if (state.laps >= state.maxLaps) {
-      state.bestMessage = '¡Perfecto! Carrera completada en Arfe Bros.';
+      state.bestMessage = '¡Perfecto! Carrera completada en Cyberpunk Racing.';
       state.speed = 0;
     } else {
-      state.bestMessage = `Vueltas: ${state.laps} / ${state.maxLaps} — sigue así.`;
+      state.bestMessage = `Vueltas: ${state.laps} / ${state.maxLaps} — sigue dominando la pista.`;
     }
   }
   state.lastFinish = crossing;
@@ -387,6 +393,21 @@ function updateUI() {
   messageEl.textContent = state.bestMessage;
 }
 
+const rainDrops = [];
+for (let i = 0; i < 500; i++) {
+  const drop = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.3), new THREE.MeshBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.6 }));
+  drop.position.set(Math.random() * 400 - 200, Math.random() * 50 + 10, Math.random() * 400 - 200);
+  scene.add(drop);
+  rainDrops.push(drop);
+}
+
+function updateRain(delta) {
+  for (const drop of rainDrops) {
+    drop.position.y -= 15 * delta;
+    if (drop.position.y < 0) drop.position.y = 50;
+  }
+}
+
 let lastTime = performance.now();
 function animate(time) {
   requestAnimationFrame(animate);
@@ -396,6 +417,7 @@ function animate(time) {
   lastTime = time;
 
   updatePhysics(delta);
+  updateRain(delta);
   kart.group.position.copy(state.position);
   kart.group.rotation.y = state.rotation;
   updateCamera();

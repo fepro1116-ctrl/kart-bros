@@ -1,23 +1,32 @@
-# Arfe Bros
+# Cyberpunk Racing
 
-Un pequeño juego de carreras 3D inspirado en personajes arcade, ahora como `Arfe Bros`.
+Un juego de carreras 3D futurista en un mundo cyberpunk nocturno con pistas neón, hypercars y lluvia.
 
 ## Cómo ejecutar
 
 1. Abre `index.html` en un navegador moderno.
-2. Usa las teclas `W`, `A`, `S`, `D` para conducir.
+2. Selecciona pista y jugador, luego presiona "¡Empezar Carrera!".
+3. Usa las teclas `W`, `A`, `S`, `D` para conducir.
 
-## Archivos
+## Características
 
-- `index.html`: interfaz y carga del juego.
-- `style.css`: estilos de la UI.
-- `main.js`: lógica de la pista, el kart y la física.
+- Pistas cyberpunk con neones y billboards holográficos.
+- Hypercars con diseño aerodinámico, alas masivas y acentos neón.
+- Efectos de lluvia y iluminación realista.
+- Gráficos ultra detallados estilo AAA.
 
 ## Pistas disponibles
 
-- `Pista Tropical`
-- `Pista Desierto`
+- `Pista Cyberpunk`
 - `Pista Neón`
+
+## Jugadores
+
+- Patata Roja
+- Patata Amarilla
+- Patata Morada
+
+¡Disfruta la carrera en Cyberpunk Racing!
 
 ## Controles
 
